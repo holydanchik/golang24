@@ -1,16 +1,5 @@
-// api/api.go
-package api
+package wtaranking
 
-import (
-	"encoding/json"
-	"net/http"
-	"sort"
-	"strconv"
-
-	"github.com/gorilla/mux"
-)
-
-// Player represents a tennis player's information
 type Player struct {
 	Rank              int    `json:"rank"`
 	Name              string `json:"name"`
@@ -43,56 +32,6 @@ var players = []Player{
 	{Rank: 7, Name: "Qinwen Zheng", Region: "CHN", Age: 21, TournamentsPlayed: 22, Points: 3950},
 }
 
-func ListPlayers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(players)
-}
-
-func GetPlayer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	params := mux.Vars(r)
-	playerRank := params["rank"]
-
-	// Convert playerRank to integer
-	rank, err := strconv.Atoi(playerRank)
-	if err != nil {
-		http.Error(w, "Invalid player rank", http.StatusBadRequest)
-		return
-	}
-
-	for _, player := range players {
-		if player.Rank == rank {
-			json.NewEncoder(w).Encode(player)
-			return
-		}
-	}
-
-	http.NotFound(w, r)
-}
-
-func ListTopPlayers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Sort players by points in descending order
-	sort.Slice(players, func(i, j int) bool {
-		return players[i].Points > players[j].Points
-	})
-
-	// Take the top 20 players
-	topPlayers := players[:20]
-
-	json.NewEncoder(w).Encode(topPlayers)
-}
-
-func HealthCheck(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("This app lists Top-20 women tennis players according to WTA! - Author: Daniyal Tuzelbayev"))
-}
-
-func SetupRoutes(r *mux.Router) {
-	r.HandleFunc("/players", ListPlayers).Methods("GET")
-	r.HandleFunc("/players/{rank}", GetPlayer).Methods("GET")
-	r.HandleFunc("/top-players", ListTopPlayers).Methods("GET")
-	r.HandleFunc("/health", HealthCheck).Methods("GET")
+func GetPlayers() []Player {
+	return players
 }
