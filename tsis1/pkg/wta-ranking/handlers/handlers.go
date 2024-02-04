@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -7,12 +7,13 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	wtaranking "github.com/holydanchik/golang24/tsis1/pkg/wta-ranking"
+	models "github.com/holydanchik/golang24/tsis1/pkg/wta-ranking/models"
+	info "github.com/holydanchik/golang24/tsis1/pkg/wta-ranking/info"
 )
 
 func ListPlayers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(wtaranking.GetPlayers())
+	json.NewEncoder(w).Encode(models.GetPlayers())
 }
 
 func GetPlayer(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +29,7 @@ func GetPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, player := range wtaranking.GetPlayers() {
+	for _, player := range models.GetPlayers() {
 		if player.Rank == rank {
 			json.NewEncoder(w).Encode(player)
 			return
@@ -42,17 +43,17 @@ func ListTopPlayers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Sort players by points in descending order
-	sort.Slice(wtaranking.GetPlayers(), func(i, j int) bool {
-		return wtaranking.GetPlayers()[i].Points > wtaranking.GetPlayers()[j].Points
+	sort.Slice(models.GetPlayers(), func(i, j int) bool {
+		return models.GetPlayers()[i].Points > models.GetPlayers()[j].Points
 	})
 
 	// Take the top 20 players
-	topPlayers := wtaranking.GetPlayers()[:20]
+	topPlayers := models.GetPlayers()[:20]
 
 	json.NewEncoder(w).Encode(topPlayers)
 }
 
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(wtaranking.Info()))
+	w.Write([]byte(info.Info()))
 }

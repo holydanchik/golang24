@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlers "github.com/holydanchik/golang24/tsis1/pkg/wta-ranking/handlers"
 )
 
 const PORT = ":8080"
@@ -15,10 +16,10 @@ func main() {
 	router := mux.NewRouter()
 
 	log.Println("creating routes")
-	router.HandleFunc("/players", ListPlayers).Methods("GET")
-	router.HandleFunc("/players/{rank}", GetPlayer).Methods("GET")
-	router.HandleFunc("/top-players", ListTopPlayers).Methods("GET")
-	router.HandleFunc("/health-check", HealthCheck).Methods("GET")
+	router.HandleFunc("/players", handlers.ListPlayers).Methods("GET")
+	router.HandleFunc("/players/{rank}", handlers.GetPlayer).Methods("GET")
+	router.HandleFunc("/top-players", handlers.ListTopPlayers).Methods("GET")
+	router.HandleFunc("/health-check", handlers.HealthCheck).Methods("GET")
 
 	http.Handle("/", router)
 

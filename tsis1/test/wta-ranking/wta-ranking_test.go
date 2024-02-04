@@ -8,7 +8,8 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/holydanchik/golang24/tsis1/cmd/wta-ranking"
+	handlers "github.com/holydanchik/golang24/tsis1/pkg/wta-ranking/handlers"
+	models "github.com/holydanchik/golang24/tsis1/pkg/wta-ranking/models"
 )
 
 func TestListPlayers(t *testing.T) {
@@ -19,7 +20,7 @@ func TestListPlayers(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/players", .ListPlayers).Methods("GET")
+	router.HandleFunc("/players", handlers.ListPlayers).Methods("GET")
 
 	router.ServeHTTP(rr, req)
 
@@ -27,13 +28,13 @@ func TestListPlayers(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	var resultPlayers []api.Player
+	var resultPlayers []models.Player
 	err = json.Unmarshal(rr.Body.Bytes(), &resultPlayers)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	expectedPlayers := []api.Player{
+	expectedPlayers := []models.Player{
 		{Rank: 4, Name: "Jessica Pegula", Region: "USA", Age: 29, TournamentsPlayed: 21, Points: 5705},
 		{Rank: 10, Name: "Karolina Muchova", Region: "CZE", Age: 27, TournamentsPlayed: 14, Points: 3520},
 		{Rank: 5, Name: "Elena Rybakina", Region: "KAZ", Age: 24, TournamentsPlayed: 18, Points: 5688},
@@ -71,12 +72,12 @@ func TestListPlayers(t *testing.T) {
 func TestGetPlayer(t *testing.T) {
 	testCases := []struct {
 		Rank           int
-		ExpectedPlayer api.Player
+		ExpectedPlayer models.Player
 		ExpectedStatus int
 	}{
 		{
 			Rank: 1,
-			ExpectedPlayer: api.Player{
+			ExpectedPlayer: models.Player{
 				Rank:              1,
 				Name:              "Iga Swiatek",
 				Region:            "POL",
@@ -88,7 +89,7 @@ func TestGetPlayer(t *testing.T) {
 		},
 		{
 			Rank: 5,
-			ExpectedPlayer: api.Player{
+			ExpectedPlayer: models.Player{
 				Rank:              5,
 				Name:              "Elena Rybakina",
 				Region:            "KAZ",
@@ -109,7 +110,7 @@ func TestGetPlayer(t *testing.T) {
 
 			rr := httptest.NewRecorder()
 			router := mux.NewRouter()
-			router.HandleFunc("/players/{rank}", api.GetPlayer).Methods("GET")
+			router.HandleFunc("/players/{rank}", handlers.GetPlayer).Methods("GET")
 
 			router.ServeHTTP(rr, req)
 
@@ -117,7 +118,7 @@ func TestGetPlayer(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, testCase.ExpectedStatus)
 			}
 
-			var resultPlayer api.Player
+			var resultPlayer models.Player
 			err = json.Unmarshal(rr.Body.Bytes(), &resultPlayer)
 			if err != nil {
 				t.Fatal(err)
@@ -138,7 +139,7 @@ func TestListTopPlayers(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/top-players", api.ListTopPlayers).Methods("GET")
+	router.HandleFunc("/top-players", handlers.ListTopPlayers).Methods("GET")
 
 	router.ServeHTTP(rr, req)
 
@@ -146,13 +147,13 @@ func TestListTopPlayers(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	var resultTopPlayers []api.Player
+	var resultTopPlayers []models.Player
 	err = json.Unmarshal(rr.Body.Bytes(), &resultTopPlayers)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	expectedTopPlayers := []api.Player{
+	expectedTopPlayers := []models.Player{
 		{Rank: 1, Name: "Iga Swiatek", Region: "POL", Age: 22, TournamentsPlayed: 19, Points: 9770},
 		{Rank: 2, Name: "Aryna Sabalenka", Region: "BLR", Age: 25, TournamentsPlayed: 16, Points: 8905},
 		{Rank: 3, Name: "Coco Gauff", Region: "USA", Age: 19, TournamentsPlayed: 19, Points: 7200},

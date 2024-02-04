@@ -1,4 +1,4 @@
-package wtaranking
+package models
 
 type Player struct {
 	Rank              int    `json:"rank"`
